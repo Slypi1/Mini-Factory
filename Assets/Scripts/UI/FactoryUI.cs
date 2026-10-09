@@ -86,11 +86,10 @@ public class FactoryUI : MonoBehaviour
         GameConfig config = bootstrapper.GameConfig;
 
         if (balanceText != null)
-            balanceText.text = $"Coins: {state.Currency:F1}";
+            balanceText.text = ((int)state.Currency).ToString();
 
         if (totalProductionText != null)
-            totalProductionText.text =
-                $"Production: {bootstrapper.Factory.GetTotalProduction():F1}/sec";
+            totalProductionText.text = bootstrapper.Factory.GetTotalProduction().ToString();
 
         int cardIndex = 0;
 
@@ -121,6 +120,8 @@ public class FactoryUI : MonoBehaviour
                 ? machine.GetUpgradeCost(machineState.Level)
                 : machine.UnlockCost;
 
+            bool canAfford = state.Currency >= cost;
+
             cards[cardIndex].Setup(
                 machine.MachineId,
                 machine.DisplayName,
@@ -128,7 +129,8 @@ public class FactoryUI : MonoBehaviour
                 unlocked,
                 production,
                 cost,
-                OnMachineAction);
+                OnMachineAction,
+                canAfford);
 
             cardIndex++;
         }

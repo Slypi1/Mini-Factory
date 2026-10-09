@@ -21,8 +21,14 @@ public class MachineCardUI : MonoBehaviour
         bool isUnlocked,
         double production,
         double cost,
-        System.Action<string> actionCallback)
+        System.Action<string> actionCallback,
+        bool canAfford)
     {
+        if (actionButton != null)
+        {
+            actionButton.interactable = canAfford;
+        }
+        
         machineId = id;
         onActionClicked = actionCallback;
 
