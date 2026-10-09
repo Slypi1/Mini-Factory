@@ -2,55 +2,55 @@ using UnityEngine;
 
 public class Bootstrapper : MonoBehaviour
 {
-    [SerializeField] private GameConfig gameConfig;
+    [SerializeField] private GameConfig _gameConfig;
     
-    public GameConfig GameConfig => gameConfig;
-    public FactoryState State => state;
-    public FactoryService Factory => factory;
-    public BoostService Boost => boost;
+    public GameConfig GameConfig => _gameConfig;
+    public FactoryState State => _state;
+    public FactoryService Factory => _factory;
+    public BoostService Boost => _boost;
  
 
-    private FactoryState state;
-    private FactoryService factory;
-    private ProductionService production;
-    private BoostService boost;
+    private FactoryState _state;
+    private FactoryService _factory;
+    private ProductionService _production;
+    private BoostService _boost;
     
-    private ISaveService saveService;
-    private IAnalyticsService analytics;
+    private ISaveService _saveService;
+    private IAnalyticsService _analytics;
     
     private void Start()
     {
-        if (gameConfig == null)
+        if (_gameConfig == null)
         {
             Debug.LogError("Bootstrapper: GameConfig is not assigned.");
             enabled = false;
             return;
         }
         
-        analytics = new AnalyticsService();
-        analytics.TrackEvent("game_started");
+        _analytics = new AnalyticsService();
+        _analytics.TrackEvent("game_started");
 
         ISaveService saveService = new SaveService();
 
-        state = saveService.Load();
+        _state = saveService.Load();
 
-        if (state == null)
-            state = FactoryInitializer.CreateNewGame(gameConfig);
+        if (_state == null)
+            _state = FactoryInitializer.CreateNewGame(_gameConfig);
 
         EconomyService economy = new EconomyService();
-        factory = new FactoryService(gameConfig, state, economy);
-        production = new ProductionService(factory);
-        boost = new BoostService(gameConfig, state);
+        _factory = new FactoryService(_gameConfig, _state, economy);
+        _production = new ProductionService(_factory);
+        _boost = new BoostService(_gameConfig, _state);
 
         if (saveService.HasSave())
         {
             OfflineProgressService offlineService =
-                new OfflineProgressService(gameConfig, factory);
+                new OfflineProgressService(_gameConfig, _factory);
 
             long now = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             double offlineIncome =
-                offlineService.ApplyOfflineProgress(state, now);
+                offlineService.ApplyOfflineProgress(_state, now);
 
             if (offlineIncome > 0)
             {
@@ -61,8 +61,7 @@ public class Bootstrapper : MonoBehaviour
                         { "income", offlineIncome }
                     });
             }
-
-            Debug.Log($"Offline income applied: {offlineIncome:F2}");
+            
         }
 
         FactoryLoop loop = GetComponent<FactoryLoop>();
@@ -70,11 +69,8 @@ public class Bootstrapper : MonoBehaviour
         if (loop == null)
             loop = gameObject.AddComponent<FactoryLoop>();
 
-        loop.Initialize(production, boost);
-
-        Debug.Log(
-            $"Factory started. Balance: {state.Currency:F2}, " +
-            $"Production: {factory.GetTotalProduction():F2} coins/sec");
+        loop.Initialize(_production, _boost);
+        
     }
     
     
@@ -91,20 +87,20 @@ public class Bootstrapper : MonoBehaviour
 
     private void SaveGame()
     {
-        if (state == null)
+        if (_state == null)
             return;
 
-        if (saveService == null)
-            saveService = new SaveService();
+        if (_saveService == null)
+            _saveService = new SaveService();
 
-        saveService.Save(state);
+        _saveService.Save(_state);
     }
     
     
     public bool TryUnlockMachine(string machineId)
     {
-        bool success = factory != null &&
-                       factory.UnlockMachine(machineId);
+        bool success = _factory != null &&
+                       _factory.UnlockMachine(machineId);
 
         if (success)
             SaveGame();
@@ -114,8 +110,8 @@ public class Bootstrapper : MonoBehaviour
 
     public bool TryUpgradeMachine(string machineId)
     {
-        bool success = factory != null &&
-                       factory.UpgradeMachine(machineId);
+        bool success = _factory != null &&
+                       _factory.UpgradeMachine(machineId);
 
         if (success)
             SaveGame();
@@ -125,10 +121,10 @@ public class Bootstrapper : MonoBehaviour
 
     public bool TryStartBoost()
     {
-        if (boost == null)
+        if (_boost == null)
             return false;
 
-        bool success = boost.TryStart(
+        bool success = _boost.TryStart(
             System.DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
         if (success)
@@ -141,15 +137,15 @@ public class Bootstrapper : MonoBehaviour
         string eventName,
         System.Collections.Generic.Dictionary<string, object> parameters = null)
     {
-        analytics?.TrackEvent(eventName, parameters);
+        _analytics?.TrackEvent(eventName, parameters);
     }
     
     public void GrantCurrency(double amount)
     {
-        if (factory == null)
+        if (_factory == null)
             return;
 
-        factory.AddCurrency(amount);
+        _factory.AddCurrency(amount);
         SaveGame();
     }
     

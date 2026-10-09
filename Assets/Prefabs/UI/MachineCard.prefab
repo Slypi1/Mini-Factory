@@ -367,11 +367,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a5771409a79314488971445ae2ea9d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: MiniFactory.Runtime::MachineCardUI
-  machineNameText: {fileID: 1175611530344107426}
-  levelText: {fileID: 2502581898943992697}
-  productionText: {fileID: 5229206114046557415}
-  actionButtonText: {fileID: 2761796727169105874}
-  actionButton: {fileID: 8763429810187204693}
+  _machineNameText: {fileID: 1175611530344107426}
+  _levelText: {fileID: 2502581898943992697}
+  _productionText: {fileID: 5229206114046557415}
+  _actionButtonText: {fileID: 2761796727169105874}
+  _actionButton: {fileID: 8763429810187204693}
 --- !u!1 &6704788556290756867
 GameObject:
   m_ObjectHideFlags: 0

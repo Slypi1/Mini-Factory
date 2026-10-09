@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94ccb5343456b984295c7560d8c4c86c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: MiniFactory.Runtime::Bootstrapper
-  gameConfig: {fileID: 11400000, guid: f94e1754545b0414ca1437556be775ff, type: 2}
+  _gameConfig: {fileID: 11400000, guid: f94e1754545b0414ca1437556be775ff, type: 2}
 --- !u!1 &28711613
 GameObject:
   m_ObjectHideFlags: 0
@@ -1373,13 +1373,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f2a26a4b210eb247932c8ef0024f23a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: MiniFactory.Runtime::FactoryUI
-  bootstrapper: {fileID: 28008496}
-  machinesContainer: {fileID: 1708322766}
-  machineCardPrefab: {fileID: 1828304924379913256, guid: 2775031f78df83349981e928ee01b978, type: 3}
-  balanceText: {fileID: 191774804}
-  totalProductionText: {fileID: 83787128}
-  boostButton: {fileID: 257759466}
-  boostTimerText: {fileID: 1415300067}
+  _bootstrapper: {fileID: 28008496}
+  _machinesContainer: {fileID: 1708322766}
+  _machineCardPrefab: {fileID: 1828304924379913256, guid: 2775031f78df83349981e928ee01b978, type: 3}
+  _balanceText: {fileID: 191774804}
+  _totalProductionText: {fileID: 83787128}
+  _boostButton: {fileID: 257759466}
+  _boostTimerText: {fileID: 1415300067}
 --- !u!1 &837030315
 GameObject:
   m_ObjectHideFlags: 0
@@ -2281,8 +2281,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0471e923551700145a09786ddfb168b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: MiniFactory.Runtime::IAPManager
-  bootstrapper: {fileID: 28008496}
-  buyCoinsButton: {fileID: 63062715}
+  _bootstrapper: {fileID: 28008496}
+  _buyCoinsButton: {fileID: 63062715}
 --- !u!1 &1977809637
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,15 +5,15 @@ using TMPro;
 public class FactoryUI : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Bootstrapper bootstrapper;
-    [SerializeField] private Transform machinesContainer;
-    [SerializeField] private MachineCardUI machineCardPrefab;
-    [SerializeField] private TMP_Text balanceText;
-    [SerializeField] private TMP_Text totalProductionText;
+    [SerializeField] private Bootstrapper _bootstrapper;
+    [SerializeField] private Transform _machinesContainer;
+    [SerializeField] private MachineCardUI _machineCardPrefab;
+    [SerializeField] private TMP_Text _balanceText;
+    [SerializeField] private TMP_Text _totalProductionText;
     
     [Header("Boost UI")]
-    [SerializeField] private UnityEngine.UI.Button boostButton;
-    [SerializeField] private TMP_Text boostTimerText;
+    [SerializeField] private UnityEngine.UI.Button _boostButton;
+    [SerializeField] private TMP_Text _boostTimerText;
     
     private bool wasBoostActive;
 
@@ -22,9 +22,9 @@ public class FactoryUI : MonoBehaviour
 
     private void Start()
     {
-        if (bootstrapper == null ||
-            machinesContainer == null ||
-            machineCardPrefab == null)
+        if (_bootstrapper == null ||
+            _machinesContainer == null ||
+            _machineCardPrefab == null)
         {
             Debug.LogError(
                 "FactoryUI: Assign Bootstrapper, " +
@@ -35,9 +35,9 @@ public class FactoryUI : MonoBehaviour
 
         CreateMachineCards();
         
-        if (boostButton != null)
+        if (_boostButton != null)
         {
-            boostButton.onClick.AddListener(OnBoostClicked);
+            _boostButton.onClick.AddListener(OnBoostClicked);
         }
         
         RefreshUI();
@@ -50,14 +50,14 @@ public class FactoryUI : MonoBehaviour
 
     private void CreateMachineCards()
     {
-        foreach (Transform child in machinesContainer)
+        foreach (Transform child in _machinesContainer)
         {
             Destroy(child.gameObject);
         }
 
         cards.Clear();
 
-        GameConfig config = bootstrapper.GameConfig;
+        GameConfig config = _bootstrapper.GameConfig;
 
         if (config == null || config.Machines == null)
             return;
@@ -68,8 +68,8 @@ public class FactoryUI : MonoBehaviour
                 continue;
 
             MachineCardUI card = Instantiate(
-                machineCardPrefab,
-                machinesContainer);
+                _machineCardPrefab,
+                _machinesContainer);
 
             cards.Add(card);
         }
@@ -77,19 +77,19 @@ public class FactoryUI : MonoBehaviour
 
     private void RefreshUI()
     {
-        if (bootstrapper == null ||
-            bootstrapper.State == null ||
-            bootstrapper.Factory == null)
+        if (_bootstrapper == null ||
+            _bootstrapper.State == null ||
+            _bootstrapper.Factory == null)
             return;
 
-        FactoryState state = bootstrapper.State;
-        GameConfig config = bootstrapper.GameConfig;
+        FactoryState state = _bootstrapper.State;
+        GameConfig config = _bootstrapper.GameConfig;
 
-        if (balanceText != null)
-            balanceText.text = ((int)state.Currency).ToString();
+        if (_balanceText != null)
+            _balanceText.text = ((int)state.Currency).ToString();
 
-        if (totalProductionText != null)
-            totalProductionText.text = bootstrapper.Factory.GetTotalProduction().ToString();
+        if (_totalProductionText != null)
+            _totalProductionText.text = _bootstrapper.Factory.GetTotalProduction().ToString();
 
         int cardIndex = 0;
 
@@ -154,7 +154,7 @@ public class FactoryUI : MonoBehaviour
     private void OnMachineAction(string machineId)
     {
         MachineState machineState =
-            FindMachineState(bootstrapper.State, machineId);
+            FindMachineState(_bootstrapper.State, machineId);
 
         if (machineState == null)
             return;
@@ -163,13 +163,13 @@ public class FactoryUI : MonoBehaviour
         bool success;
 
         if (wasUnlocked)
-            success = bootstrapper.TryUpgradeMachine(machineId);
+            success = _bootstrapper.TryUpgradeMachine(machineId);
         else
-            success = bootstrapper.TryUnlockMachine(machineId);
+            success = _bootstrapper.TryUnlockMachine(machineId);
 
         if (success)
         {
-            bootstrapper.TrackEvent(
+            _bootstrapper.TrackEvent(
                 wasUnlocked ? "machine_upgraded" : "machine_unlocked",
                 new System.Collections.Generic.Dictionary<string, object>
                 {
@@ -183,48 +183,48 @@ public class FactoryUI : MonoBehaviour
     
     private void OnBoostClicked()
     {
-        bool started = bootstrapper.TryStartBoost();
+        bool started = _bootstrapper.TryStartBoost();
 
         if (started)
         {
-            bootstrapper.TrackEvent("boost_started");
+            _bootstrapper.TrackEvent("boost_started");
             RefreshUI();
         }
     }
 
     private void RefreshBoostUI()
     {
-        if (bootstrapper == null || bootstrapper.Boost == null)
+        if (_bootstrapper == null || _bootstrapper.Boost == null)
             return;
 
         long now = System.DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-        bool active = bootstrapper.Boost.IsActive(now);
+        bool active = _bootstrapper.Boost.IsActive(now);
 
-        if (boostTimerText != null)
+        if (_boostTimerText != null)
         {
             if (active)
             {
-                long remaining = bootstrapper.Boost.GetRemainingSeconds(now);
-                boostTimerText.text = $"BOOST x{bootstrapper.GameConfig.BoostMultiplier:F1} — {remaining}s";
+                long remaining = _bootstrapper.Boost.GetRemainingSeconds(now);
+                _boostTimerText.text = $"BOOST x{_bootstrapper.GameConfig.BoostMultiplier:F1} — {remaining}s";
             }
             else
             {
-                boostTimerText.text = bootstrapper.GameConfig.BoostEnabled
+                _boostTimerText.text = _bootstrapper.GameConfig.BoostEnabled
                     ? "Boost ready"
                     : "Boost disabled";
             }
         }
 
-        if (boostButton != null)
+        if (_boostButton != null)
         {
-            boostButton.interactable =
-                bootstrapper.GameConfig.BoostEnabled && !active;
+            _boostButton.interactable =
+                _bootstrapper.GameConfig.BoostEnabled && !active;
         }
         
         if (wasBoostActive && !active)
         {
-            bootstrapper.TrackEvent("boost_finished");
+            _bootstrapper.TrackEvent("boost_finished");
         }
 
         wasBoostActive = active;

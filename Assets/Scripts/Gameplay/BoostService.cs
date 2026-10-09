@@ -3,41 +3,37 @@ using UnityEngine;
 
 public class BoostService
 {
-    private readonly GameConfig config;
-    private readonly FactoryState state;
+    private readonly GameConfig _config;
+    private readonly FactoryState _state;
 
     public BoostService(GameConfig config, FactoryState state)
     {
-        this.config = config ?? throw new ArgumentNullException(nameof(config));
-        this.state = state ?? throw new ArgumentNullException(nameof(state));
+        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _state = state ?? throw new ArgumentNullException(nameof(state));
     }
 
     public bool IsActive(long currentUnixTime)
     {
-        return config.BoostEnabled &&
-               state.BoostEndUnixTime > currentUnixTime;
+        return _config.BoostEnabled &&
+               _state.BoostEndUnixTime > currentUnixTime;
     }
 
     public bool TryStart(long currentUnixTime)
     {
-        if (!config.BoostEnabled || IsActive(currentUnixTime))
+        if (!_config.BoostEnabled || IsActive(currentUnixTime))
             return false;
 
-        state.BoostStartUnixTime = currentUnixTime;
-        state.BoostEndUnixTime =
-            currentUnixTime + (long)config.BoostDurationSeconds;
+        _state.BoostStartUnixTime = currentUnixTime;
+        _state.BoostEndUnixTime =
+            currentUnixTime + (long)_config.BoostDurationSeconds;
         
-        Debug.Log(
-            $"Boost started: start={state.BoostStartUnixTime}, " +
-            $"end={state.BoostEndUnixTime}");
-
         return true;
     }
 
     public double GetMultiplier(long currentUnixTime)
     {
         return IsActive(currentUnixTime)
-            ? config.BoostMultiplier
+            ? _config.BoostMultiplier
             : 1.0;
     }
 
@@ -46,6 +42,6 @@ public class BoostService
         if (!IsActive(currentUnixTime))
             return 0;
 
-        return state.BoostEndUnixTime - currentUnixTime;
+        return _state.BoostEndUnixTime - currentUnixTime;
     }
 }

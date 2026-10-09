@@ -5,11 +5,11 @@ using UnityEngine.UI;
 public class MachineCardUI : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private TMP_Text machineNameText;
-    [SerializeField] private TMP_Text levelText;
-    [SerializeField] private TMP_Text productionText;
-    [SerializeField] private TMP_Text actionButtonText;
-    [SerializeField] private Button actionButton;
+    [SerializeField] private TMP_Text _machineNameText;
+    [SerializeField] private TMP_Text _levelText;
+    [SerializeField] private TMP_Text _productionText;
+    [SerializeField] private TMP_Text _actionButtonText;
+    [SerializeField] private Button _actionButton;
 
     private string machineId;
     private System.Action<string> onActionClicked;
@@ -24,30 +24,30 @@ public class MachineCardUI : MonoBehaviour
         System.Action<string> actionCallback,
         bool canAfford)
     {
-        if (actionButton != null)
+        if (_actionButton != null)
         {
-            actionButton.interactable = canAfford;
+            _actionButton.interactable = canAfford;
         }
         
         machineId = id;
         onActionClicked = actionCallback;
 
-        machineNameText.text = displayName;
-        levelText.text = isUnlocked
+        _machineNameText.text = displayName;
+        _levelText.text = isUnlocked
             ? $"Level: {level}"
             : "Locked";
 
-        productionText.text = isUnlocked
+        _productionText.text = isUnlocked
             ? $"Production: {production:F1}/sec"
             : $"Unlock cost: {cost:F0}";
 
-        actionButtonText.text = isUnlocked
+        _actionButtonText.text = isUnlocked
             ? $"Upgrade ({cost:F0})"
             : $"Unlock ({cost:F0})";
 
-        actionButton.interactable = true;
-        actionButton.onClick.RemoveAllListeners();
-        actionButton.onClick.AddListener(
+        _actionButton.interactable = true;
+        _actionButton.onClick.RemoveAllListeners();
+        _actionButton.onClick.AddListener(
             () => onActionClicked?.Invoke(machineId));
     }
 }

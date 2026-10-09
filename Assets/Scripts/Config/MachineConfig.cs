@@ -2,7 +2,7 @@ using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "MachineConfig",
-    menuName = "Mini Factory/Machine Config")]
+    menuName = "Mini Factory/Machine Config", order = -1000)]
 public class MachineConfig : ScriptableObject
 {
     [Header("Identity")]
@@ -11,19 +11,19 @@ public class MachineConfig : ScriptableObject
 
     [Header("Economy")]
     [Min(0)]
-    public double BaseProductionPerSecond = 1;
+    public double BaseProductionPerSecond;
 
     [Min(0)]
-    public double UnlockCost = 10;
+    public double UnlockCost;
 
     [Min(0)]
-    public double BaseUpgradeCost = 25;
+    public double BaseUpgradeCost;
 
     [Min(1)]
-    public float UpgradeCostMultiplier = 1.5f;
+    public float UpgradeCostMultiplier;
 
     [Min(1)]
-    public float ProductionMultiplierPerLevel = 2f;
+    public float ProductionMultiplierPerLevel;
 
     public double GetProduction(int level)
     {

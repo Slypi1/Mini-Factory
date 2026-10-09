@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.Purchasing;
@@ -10,17 +9,17 @@ public class IAPManager : MonoBehaviour
     private const string ProductId = "coins_pack_small";
     private const int CoinsReward = 100;
 
-    [SerializeField] private Bootstrapper bootstrapper;
-    [SerializeField] private Button buyCoinsButton;
+     [SerializeField] private Bootstrapper _bootstrapper;
+     [SerializeField] private Button _buyCoinsButton;
 
     private StoreController storeController;
     private bool isReady;
 
     private async void Start()
     {
-        buyCoinsButton.onClick.AddListener(BuySmallCoinsPack);
+        _buyCoinsButton.onClick.AddListener(BuySmallCoinsPack);
         
-        if (bootstrapper == null)
+        if (_bootstrapper == null)
         {
             Debug.LogError("IAPManager: Bootstrapper is not assigned.");
             return;
@@ -46,19 +45,18 @@ public class IAPManager : MonoBehaviour
             };
 
             storeController.FetchProducts(products);
-            Debug.Log("[IAP] Connecting and fetching product.");
-            bootstrapper.TrackEvent("iap_initialization_succeeded");
+            _bootstrapper.TrackEvent("iap_initialization_succeeded");
         }
         catch (Exception exception)
         {
-            bootstrapper.TrackEvent(
+            _bootstrapper.TrackEvent(
                 "iap_initialization_failed",
                 new Dictionary<string, object>
                 {
                     { "reason", exception.Message }
                 });
             Debug.LogError($"[IAP] Initialization failed: {exception.Message}");
-            bootstrapper.TrackEvent("iap_initialization_failed");
+            _bootstrapper.TrackEvent("iap_initialization_failed");
             
         }
     }
@@ -68,7 +66,7 @@ public class IAPManager : MonoBehaviour
         if (!isReady || storeController == null)
         {
             Debug.LogWarning("[IAP] Store is not ready.");
-            bootstrapper.TrackEvent("iap_unavailable");
+            _bootstrapper.TrackEvent("iap_unavailable");
             return;
         }
 
@@ -86,7 +84,7 @@ public class IAPManager : MonoBehaviour
         if (product == null)
         {
             Debug.LogWarning($"[IAP] Product unavailable: {ProductId}");
-            bootstrapper.TrackEvent("iap_unavailable");
+            _bootstrapper.TrackEvent("iap_unavailable");
             return;
         }
 
@@ -95,16 +93,13 @@ public class IAPManager : MonoBehaviour
 
     private void OnProductsFetched(List<Product> products)
     {
-        Debug.Log($"[IAP] Products fetched: {products.Count}");
-        bootstrapper.TrackEvent("iap_products_fetched");
-
         isReady = products.Exists(
             product => product.definition.id == ProductId);
 
         if (!isReady)
         {
             Debug.LogWarning($"[IAP] {ProductId} was not found.");
-            bootstrapper.TrackEvent("iap_unavailable");
+            _bootstrapper.TrackEvent("iap_unavailable");
             return;
         }
 
@@ -115,20 +110,19 @@ public class IAPManager : MonoBehaviour
     {
         isReady = false;
         Debug.LogWarning($"[IAP] Product fetch failed: {failure}");
-        bootstrapper.TrackEvent("iap_products_fetch_failed");
+        _bootstrapper.TrackEvent("iap_products_fetch_failed");
     }
 
     private void OnPurchasesFetched(Orders orders)
     {
-        Debug.Log("[IAP] Purchase history fetched.");
-        bootstrapper.TrackEvent("iap_purchases_fetched");
+        _bootstrapper.TrackEvent("iap_purchases_fetched");
     }
 
     private void OnPurchasesFetchFailed(
         PurchasesFetchFailureDescription failure)
     {
         Debug.LogWarning($"[IAP] Purchase history fetch failed: {failure}");
-        bootstrapper.TrackEvent("iap_purchases_fetch_failed");
+        _bootstrapper.TrackEvent("iap_purchases_fetch_failed");
     }
 
     private void OnStoreDisconnected(
@@ -136,7 +130,7 @@ public class IAPManager : MonoBehaviour
     {
         isReady = false;
         Debug.LogWarning($"[IAP] Store disconnected: {failure}");
-        bootstrapper.TrackEvent("iap_initialization_failed");
+        _bootstrapper.TrackEvent("iap_initialization_failed");
     }
 
     private void OnPurchasePending(PendingOrder order)
@@ -148,10 +142,10 @@ public class IAPManager : MonoBehaviour
             if (item.Product.definition.id != ProductId)
                 continue;
 
-            bootstrapper.GrantCurrency(CoinsReward);
+            _bootstrapper.GrantCurrency(CoinsReward);
             rewardGranted = true;
 
-            bootstrapper.TrackEvent(
+            _bootstrapper.TrackEvent(
                 "purchase_succeeded",
                 new Dictionary<string, object>
                 {
@@ -163,19 +157,18 @@ public class IAPManager : MonoBehaviour
         if (rewardGranted)
         {
             storeController.ConfirmPurchase(order);
-            Debug.Log($"[IAP] Granted {CoinsReward} coins.");
         }
     }
 
     private void OnPurchaseFailed(FailedOrder order)
     {
         Debug.LogWarning($"[IAP] Purchase failed: {order}");
-        bootstrapper.TrackEvent("purchase_failed");
+        _bootstrapper.TrackEvent("purchase_failed");
     }
 
     private void OnDestroy()
     {
-        buyCoinsButton.onClick.RemoveListener(BuySmallCoinsPack);
+        _buyCoinsButton.onClick.RemoveListener(BuySmallCoinsPack);
         
         if (storeController == null)
             return;

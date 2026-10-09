@@ -2,12 +2,11 @@ using System;
 
 public class ProductionService
 {
-    private readonly FactoryService factory;
+    private readonly FactoryService _factory;
 
     public ProductionService(FactoryService factory)
     {
-        this.factory = factory
-                       ?? throw new ArgumentNullException(nameof(factory));
+        _factory = factory ?? throw new ArgumentNullException(nameof(factory));
     }
 
     public double CalculateIncome(
@@ -29,7 +28,7 @@ public class ProductionService
         }
 
         double income =
-            factory.GetTotalProduction() * elapsedSeconds * multiplier;
+            _factory.GetTotalProduction() * elapsedSeconds * multiplier;
 
         if (double.IsNaN(income) || double.IsInfinity(income))
             return 0;
@@ -42,7 +41,7 @@ public class ProductionService
         double multiplier = 1.0)
     {
         double income = CalculateIncome(elapsedSeconds, multiplier);
-        factory.AddCurrency(income);
+        _factory.AddCurrency(income);
         return income;
     }
 }

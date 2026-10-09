@@ -3,16 +3,16 @@ using UnityEngine;
 
 public class OfflineProgressService
 {
-    private readonly GameConfig config;
-    private readonly FactoryService factory;
+    private readonly GameConfig _config;
+    private readonly FactoryService _factory;
 
     public OfflineProgressService(
         GameConfig config,
         FactoryService factory)
     {
-        this.config = config ? config : throw new ArgumentNullException(nameof(config));
+        this._config = config ? config : throw new ArgumentNullException(nameof(config));
 
-        this.factory = factory
+        this._factory = factory
                        ?? throw new ArgumentNullException(nameof(factory));
     }
 
@@ -24,7 +24,7 @@ public class OfflineProgressService
         double elapsedSeconds = currentUnixTime - state.LastSaveUnixTime;
         elapsedSeconds = Math.Min(
             elapsedSeconds,
-            Math.Max(0, config.MaxOfflineDurationSeconds));
+            Math.Max(0, _config.MaxOfflineDurationSeconds));
 
         if (elapsedSeconds <= 0)
         {
@@ -41,7 +41,7 @@ public class OfflineProgressService
 
         double boostSeconds = 0;
 
-        if (config.BoostEnabled && boostEnd > boostStart)
+        if (_config.BoostEnabled && boostEnd > boostStart)
         {
             boostSeconds = Math.Max(
                 0,
@@ -52,16 +52,13 @@ public class OfflineProgressService
         }
 
         double normalSeconds = elapsedSeconds - boostSeconds;
-        double production = factory.GetTotalProduction();
+        double production = _factory.GetTotalProduction();
 
         double income = production * (
-            normalSeconds + boostSeconds * config.BoostMultiplier);
-        Debug.Log(
-            $"Offline seconds: {elapsedSeconds}, " +
-            $"Boost seconds: {boostSeconds}, " +
-            $"Multiplier: {config.BoostMultiplier}");
+            normalSeconds + boostSeconds * _config.BoostMultiplier);
+      
 
-        factory.AddCurrency(income);
+        _factory.AddCurrency(income);
 
        
         state.LastSaveUnixTime = currentUnixTime;

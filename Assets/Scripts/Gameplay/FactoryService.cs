@@ -2,21 +2,21 @@ using System;
 
 public class FactoryService
 {
-    private readonly GameConfig config;
-    private readonly FactoryState state;
-    private readonly EconomyService economy;
+    private readonly GameConfig _config;
+    private readonly FactoryState _state;
+    private readonly EconomyService _economy;
 
     public FactoryService(
         GameConfig config,
         FactoryState state,
         EconomyService economy)
     {
-        this.config = config ? config : throw new ArgumentNullException(nameof(config));
+        this._config = config ? config : throw new ArgumentNullException(nameof(config));
 
-        this.state = state
+        this._state = state
             ?? throw new ArgumentNullException(nameof(state));
 
-        this.economy = economy
+        this._economy = economy
             ?? throw new ArgumentNullException(nameof(economy));
     }
 
@@ -28,10 +28,10 @@ public class FactoryService
         if (machine == null || machineState == null)
             return false;
 
-        if (machineState.IsUnlocked || state.Currency < machine.UnlockCost)
+        if (machineState.IsUnlocked || _state.Currency < machine.UnlockCost)
             return false;
 
-        state.Currency -= machine.UnlockCost;
+        _state.Currency -= machine.UnlockCost;
         machineState.IsUnlocked = true;
         machineState.Level = 1;
 
@@ -47,12 +47,12 @@ public class FactoryService
             !machineState.IsUnlocked)
             return false;
 
-        double cost = economy.GetUpgradeCost(machine, machineState);
+        double cost = _economy.GetUpgradeCost(machine, machineState);
 
-        if (state.Currency < cost)
+        if (_state.Currency < cost)
             return false;
 
-        state.Currency -= cost;
+        _state.Currency -= cost;
         machineState.Level++;
 
         return true;
@@ -65,17 +65,17 @@ public class FactoryService
             double.IsInfinity(amount))
             return;
 
-        state.Currency += amount;
+        _state.Currency += amount;
     }
 
     public double GetTotalProduction()
     {
-        return economy.GetTotalProduction(config, state);
+        return _economy.GetTotalProduction(_config, _state);
     }
 
     private MachineConfig FindConfig(string machineId)
     {
-        foreach (MachineConfig machine in config.Machines)
+        foreach (MachineConfig machine in _config.Machines)
         {
             if (machine != null && machine.MachineId == machineId)
                 return machine;
@@ -86,7 +86,7 @@ public class FactoryService
 
     private MachineState FindState(string machineId)
     {
-        foreach (MachineState machine in state.Machines)
+        foreach (MachineState machine in _state.Machines)
         {
             if (machine.MachineId == machineId)
                 return machine;

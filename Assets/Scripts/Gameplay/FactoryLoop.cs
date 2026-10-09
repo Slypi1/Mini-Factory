@@ -3,24 +3,24 @@ using System;
 
 public class FactoryLoop : MonoBehaviour
 {
-    private ProductionService production;
-    private BoostService boost;
-    private bool isInitialized;
-    private double fractionalUnixTime;
+    private ProductionService _production;
+    private BoostService _boost;
+    private bool _isInitialized;
+    private double _fractionalUnixTime;
 
     public void Initialize(
         ProductionService productionService,
         BoostService boostService)
     {
-        production = productionService;
-        boost = boostService;
-        isInitialized = production != null && boost != null;
-        fractionalUnixTime = 0;
+        _production = productionService;
+        _boost = boostService;
+        _isInitialized = _production != null && _boost != null;
+        _fractionalUnixTime = 0;
     }
 
     private void Update()
     {
-        if (!isInitialized)
+        if (!_isInitialized)
             return;
 
         double remainingFrameTime = Time.deltaTime;
@@ -29,10 +29,10 @@ public class FactoryLoop : MonoBehaviour
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            if (boost.IsActive(now))
+            if (_boost.IsActive(now))
             {
                 double secondsToBoostEnd =
-                    boost.GetRemainingSeconds(now) - fractionalUnixTime;
+                    _boost.GetRemainingSeconds(now) - _fractionalUnixTime;
 
                 if (secondsToBoostEnd <= 0)
                     secondsToBoostEnd = remainingFrameTime;
@@ -40,21 +40,21 @@ public class FactoryLoop : MonoBehaviour
                 double boostedTime =
                     Math.Min(remainingFrameTime, secondsToBoostEnd);
 
-                production.ApplyIncome(
+                _production.ApplyIncome(
                     boostedTime,
-                    boost.GetMultiplier(now));
+                    _boost.GetMultiplier(now));
 
                 remainingFrameTime -= boostedTime;
             }
             else
             {
-                production.ApplyIncome(remainingFrameTime);
+                _production.ApplyIncome(remainingFrameTime);
                 remainingFrameTime = 0;
             }
         }
 
-        fractionalUnixTime += Time.deltaTime;
-        if (fractionalUnixTime >= 1)
-            fractionalUnixTime %= 1;
+        _fractionalUnixTime += Time.deltaTime;
+        if (_fractionalUnixTime >= 1)
+            _fractionalUnixTime %= 1;
     }
 }
